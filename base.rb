@@ -1,3 +1,7 @@
+def source_paths
+  [File.expand_path(File.dirname(__FILE__))]
+end
+
 git :init
 git :add => "--all"
 git :commit => "-qm 'Initial commit'"
@@ -30,18 +34,8 @@ gem 'bootstrap-sass'
 run_bundle
 run "bundle exec spring binstub --all"
 
-file "config/initializers/generators.rb", <<-CODE
-Rails.application.config.generators do |g|
-  g.helper           false
-  g.assets           false
-  g.view_specs       false
-  g.controller_specs false
-end
-CODE
-
-file "app/assets/stylesheets/framework_and_overrides.css.scss", <<-CODE
-@import 'bootstrap';
-CODE
+copy_file "config/initializers/generators.rb"
+copy_file "app/assets/stylesheets/framework_and_overrides.css.scss"
 
 insert_into_file \
   "app/assets/javascripts/application.js",
@@ -59,7 +53,4 @@ generate   "rspec:install"
 gsub_file ".rspec", /--warnings\n/, ""
 gsub_file ".rspec", /--require spec_helper/, "--require rails_helper"
 
-insert_into_file \
-  "spec/rails_helper.rb",
-  "\n  config.include FactoryGirl::Syntax::Methods\n",
-  after: "RSpec.configure do |config|"
+copy_file "spec/support/factory_girl.rb"
